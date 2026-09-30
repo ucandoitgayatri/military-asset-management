@@ -1,128 +1,74 @@
+
 import { useEffect, useState } from "react";
-import { bases, equipment } from "../data";
+import { bases } from "../data";
 import { getDashboard } from "../services/api";
 
 function Dashboard({ user }) {
+    const isBaseCommander = user.role === "ROLE_BASE_COMMANDER";
 
-    const isBaseCommander =
-        user.role === "ROLE_BASE_COMMANDER";
+    const visibleBases = isBaseCommander ? bases.filter((base) => base.id === user.baseId): bases;
 
-    const visibleBases =
-        isBaseCommander
-            ? bases.filter(
-                (base) =>
-                    base.id === user.baseId
-            )
-            : bases;
 
-    const equipmentTypes = [
-        ...new Set(
-            equipment.map(
-                (item) => item.type
-            )
-        )
-    ];
+    const [baseId, setBaseId] = useState(isBaseCommander ? user.baseId : "");
+    const [equipmentType, setEquipmentType] = useState("");
+    const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
 
-    const today = new Date()
-        .toISOString()
-        .split("T")[0];
 
-    const [baseId, setBaseId] =
-        useState(
-            isBaseCommander
-                ? String(user.baseId)
-                : ""
-        );
+    const [appliedBaseId, setAppliedBaseId] = useState(isBaseCommander ? user.baseId : "");
+    const [appliedEquipmentType, setAppliedEquipmentType] = useState("");
+    const [appliedDate, setAppliedDate] = useState(new Date().toISOString().split("T")[0]);
 
-    const [equipmentType, setEquipmentType] =
-        useState("");
+    const [dashboard, setDashboard] = useState({
+        "Opening Balance": 0,
+        "Closing Balance": 0,
+        "NetMovement": 0,
+        "Assignment": 0,
+        "Expenditure": 0
+    });
 
-    const [date, setDate] =
-        useState(today);
+    const [error, setError] = useState("");
 
-    const [dashboard, setDashboard] =
-        useState({
-            "Opening Balance": 0,
-            "Closing Balance": 0,
-            "NetMovement": 0,
-            "Assignment": 0,
-            "Expenditure": 0
-        });
-
-    const [loading, setLoading] =
-        useState(false);
-
-    const [error, setError] =
-        useState("");
-
-    useEffect(() => {
-        loadDashboard();
-    }, []);
+    useEffect(() => {loadDashboard();}, [appliedBaseId, appliedEquipmentType, appliedDate]);
 
     async function loadDashboard() {
-
-        setLoading(true);
-        setError("");
-
         try {
-
-            const data =
-                await getDashboard(
-                    baseId,
-                    equipmentType,
-                    date
-                );
-
-            setDashboard(data);
-
+            setError("");
+            const data = await getDashboard(appliedBaseId,appliedEquipmentType,appliedDate);
+             setDashboard(data);
         } catch (err) {
-
             setError(err.message);
-
-        } finally {
-
-            setLoading(false);
         }
     }
 
+    function handleApplyFilter() {
+        setAppliedBaseId(baseId);
+        setAppliedEquipmentType(equipmentType);
+        setAppliedDate(date);
+    }
+
     function handleClear() {
+        if (isBaseCommander) {
+            setBaseId(user.baseId);
+            setAppliedBaseId(user.baseId);
+        } else {
+            setBaseId("");
+            setAppliedBaseId("");
+        }
 
-        const defaultBase =
-            isBaseCommander
-                ? String(user.baseId)
-                : "";
-
-        setBaseId(defaultBase);
         setEquipmentType("");
+        setAppliedEquipmentType("");
+
+        const today = new Date().toISOString().split("T")[0];
         setDate(today);
-
-        setTimeout(() => {
-
-            getDashboard(
-                defaultBase,
-                "",
-                today
-            )
-                .then((data) =>
-                    setDashboard(data)
-                )
-                .catch((err) =>
-                    setError(err.message)
-                );
-
-        }, 0);
+        setAppliedDate(today);
     }
 
     return (
         <div>
-
             <div className="page-heading">
                 <div>
                     <h1>Dashboard</h1>
-
-                    <p>
-                        Overview of military asset movement
-                    </p>
+                    <p>Military asset summary</p>
                 </div>
 
                 <div className="user-badge">
@@ -133,205 +79,95 @@ function Dashboard({ user }) {
             </div>
 
             <div className="filter-panel">
+                <div className="form-group">
+                    <label>Base</label>
 
-                <div className="filter-title">
-                    Filters
-                </div>
+                    <select
+                        value={baseId}
+                        onChange={(e) => setBaseId(e.target.value)}
+                        disabled={isBaseCommander}
+                    >
+                        {!isBaseCommander && (
+                            <option value="">All Bases</option>
+                        )}
 
-                <div className="filter-grid">
-
-                    <div className="form-group">
-
-                        <label>
-                            Base
-                        </label>
-
-                        <select
-                            value={baseId}
-                            onChange={(e) =>
-                                setBaseId(
-                                    e.target.value
-                                )
-                            }
-                        >
-
-                            {!isBaseCommander && (
-                                <option value="">
-                                    All Bases
-                                </option>
-                            )}
-
-                            {visibleBases.map(
-                                (base) => (
-                                    <option
-                                        key={base.id}
-                                        value={base.id}
-                                    >
-                                        {base.name}
-                                    </option>
-                                )
-                            )}
-
-                        </select>
-
-                    </div>
-
-                    <div className="form-group">
-
-                        <label>
-                            Equipment Type
-                        </label>
-
-                        <select
-                            value={equipmentType}
-                            onChange={(e) =>
-                                setEquipmentType(
-                                    e.target.value
-                                )
-                            }
-                        >
-
-                            <option value="">
-                                All Equipment
+                        {visibleBases.map((base) => (
+                            <option key={base.id} value={base.id}>
+                                {base.name}
                             </option>
-
-                            {equipmentTypes.map(
-                                (type) => (
-                                    <option
-                                        key={type}
-                                        value={type}
-                                    >
-                                        {type}
-                                    </option>
-                                )
-                            )}
-
-                        </select>
-
-                    </div>
-
-                    <div className="form-group">
-
-                        <label>
-                            Date
-                        </label>
-
-                        <input
-                            type="date"
-                            value={date}
-                            onChange={(e) =>
-                                setDate(
-                                    e.target.value
-                                )
-                            }
-                        />
-
-                    </div>
-
-                    <div className="filter-actions">
-
-                        <button
-                            onClick={loadDashboard}
-                            className="primary-button"
-                        >
-                            {loading
-                                ? "Loading..."
-                                : "Apply Filters"}
-                        </button>
-
-                        <button
-                            onClick={handleClear}
-                            className="secondary-button"
-                        >
-                            Clear
-                        </button>
-
-                    </div>
-
+                        ))}
+                    </select>
                 </div>
 
+                <div className="form-group">
+                    <label>Equipment Type</label>
+
+                    <select
+                        value={equipmentType}
+                        onChange={(e) => setEquipmentType(e.target.value)}
+                    >
+                        <option value="">All Types</option>
+                        <option value="Vehicle">Vehicle</option>
+                        <option value="Weapon">Weapon</option>
+                        <option value="Ammunition">Ammunition</option>
+                    </select>
+                </div>
+
+                <div className="form-group">
+                    <label>Date</label>
+
+                    <input
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                    />
+                </div>
+
+                <div className="filter-buttons">
+                    <button
+                        className="apply-button"
+                        onClick={handleApplyFilter}
+                    >
+                        Apply Filter
+                    </button>
+
+                    <button
+                        className="clear-button"
+                        onClick={handleClear}
+                    >
+                        Clear
+                    </button>
+                </div>
             </div>
 
-            {error && (
-                <div className="error-box page-message">
-                    {error}
-                </div>
-            )}
+            {error && <div className="error-box">{error}</div>}
 
             <div className="dashboard-grid">
-
                 <div className="dashboard-card">
-                    <div className="card-label">
-                        Opening Balance
-                    </div>
-
-                    <div className="card-number">
-                        {dashboard["Opening Balance"] || 0}
-                    </div>
-
-                    <div className="card-note">
-                        Assets before selected date
-                    </div>
+                    <h3>Opening Balance</h3>
+                    <p>{dashboard["Opening Balance"]}</p>
                 </div>
 
                 <div className="dashboard-card">
-                    <div className="card-label">
-                        Net Movement
-                    </div>
-
-                    <div className="card-number">
-                        {dashboard["NetMovement"] || 0}
-                    </div>
-
-                    <div className="card-note">
-                        Purchases + In - Out
-                    </div>
+                    <h3>Closing Balance</h3>
+                    <p>{dashboard["Closing Balance"]}</p>
                 </div>
 
                 <div className="dashboard-card">
-                    <div className="card-label">
-                        Assigned
-                    </div>
-
-                    <div className="card-number">
-                        {dashboard["Assignment"] || 0}
-                    </div>
-
-                    <div className="card-note">
-                        Assets assigned
-                    </div>
+                    <h3>Net Movement</h3>
+                    <p>{dashboard["NetMovement"]}</p>
                 </div>
 
                 <div className="dashboard-card">
-                    <div className="card-label">
-                        Expended
-                    </div>
-
-                    <div className="card-number">
-                        {dashboard["Expenditure"] || 0}
-                    </div>
-
-                    <div className="card-note">
-                        Assets expended
-                    </div>
+                    <h3>Assigned</h3>
+                    <p>{dashboard["Assignment"]}</p>
                 </div>
 
-                <div className="dashboard-card highlight-card">
-                    <div className="card-label">
-                        Closing Balance
-                    </div>
-
-                    <div className="card-number">
-                        {dashboard["Closing Balance"] || 0}
-                    </div>
-
-                    <div className="card-note">
-                        Current balance
-                    </div>
+                <div className="dashboard-card">
+                    <h3>Expended</h3>
+                    <p>{dashboard["Expenditure"]}</p>
                 </div>
-
             </div>
-
         </div>
     );
 }

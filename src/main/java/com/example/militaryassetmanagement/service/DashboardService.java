@@ -30,10 +30,7 @@ public class DashboardService{
         this.transferRepository = transferRepository;
         this.userRepository = userRepository;
 
-
-
     }
-
 
 
      public Map<String, Integer> getDashboardDetails(Integer baseId,String equipmentType,LocalDate date) {
@@ -41,20 +38,17 @@ public class DashboardService{
                         // BaseId instead of base cause its more useful
                         // Map<String, Integer> because want to show method name and quantity
 
-         User user = getLoggedInUser();
+         User user = getCurrentlyLoggedInUser();
 
          if (date == null) { date = LocalDate.now(); }//if no date is provided use current date
          Base base = null;
 
          if (isBaseCommander(user)) {
-
              if (user.getBase() == null) {
                  throw new RuntimeException(
                          "Base Commander has no assigned base"
                  );
              }
-
-             // Ignore whatever baseId came from React
              base = user.getBase();
 
          } else if (baseId != null) {
@@ -64,9 +58,6 @@ public class DashboardService{
                              new RuntimeException("Base not found")// baseId != null means if you haven't provided any base then baseId becomes null and this method will not work and exception is not thrown
                      );
          }
-
-
-
 
          int openingBalance = openingBalanceCalculate(base, equipmentType, date);
          int closingBalance = closingBalanceCalculate(base, equipmentType, date);
@@ -128,8 +119,7 @@ public class DashboardService{
         int assignment = assignmentRepository.getAssignedQuantityOnDate(base,equipmentType,date);
         return  assignment;
     }
-    private User getLoggedInUser() {
-
+    private User getCurrentlyLoggedInUser() {
         Authentication authentication =
                 SecurityContextHolder
                         .getContext()

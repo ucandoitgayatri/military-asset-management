@@ -43,46 +43,28 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestBody LoginRequest loginRequest,
-            HttpServletRequest request,
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest, HttpServletRequest request,
             HttpServletResponse response) {
 
-        Authentication authentication =
-                authenticationManager.authenticate(
-                        new UsernamePasswordAuthenticationToken(
-                                loginRequest.username(),
-                                loginRequest.password()
-                        )
-                );
+        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken
+                        (loginRequest.username(), loginRequest.password()));
 
-        SecurityContext context =
-                SecurityContextHolder.createEmptyContext();
+        SecurityContext context = SecurityContextHolder.createEmptyContext();
 
         context.setAuthentication(authentication);
 
         SecurityContextHolder.setContext(context);
 
-        securityContextRepository.saveContext(
-                context,
-                request,
-                response
-        );
+        securityContextRepository.saveContext(context, request, response);
 
-        User user = userRepository.findByUsername(
-                authentication.getName()
-        ).orElseThrow(() ->
-                new RuntimeException("User not found")
-        );
+        User user = userRepository.findByUsername(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         Map<String, Object> result = new HashMap<>();
 
         result.put("message", "Login successful");
         result.put("username", user.getUsername());
-        result.put("role", authentication.getAuthorities()
-                .iterator()
-                .next()
-                .getAuthority());
+        result.put("role", authentication.getAuthorities().iterator().next().getAuthority());
 
         if (user.getBase() != null) {
             result.put("baseId", user.getBase().getId());

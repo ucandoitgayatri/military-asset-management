@@ -18,27 +18,21 @@ public class MilitaryAssetService {
     private final TransferRepository transferRepository;
     private final AssignmentRepository assignmentRepository;
     private final ExpenditureRepository expenditureRepository;
-
     private final BaseRepository baseRepository;
     private final EquipmentRepository equipmentRepository;
     private final AuditRepository auditRepository;
     private final UserRepository userRepository;
 
 
-    public MilitaryAssetService(
-            PurchaseRepository purchaseRepository,
-            TransferRepository transferRepository,
-            AssignmentRepository assignmentRepository,
-            ExpenditureRepository expenditureRepository,
-            BaseRepository baseRepository,
-            EquipmentRepository equipmentRepository,
+    public MilitaryAssetService(PurchaseRepository purchaseRepository, TransferRepository transferRepository,
+            AssignmentRepository assignmentRepository, ExpenditureRepository expenditureRepository,
+            BaseRepository baseRepository, EquipmentRepository equipmentRepository,
             AuditRepository auditRepository,UserRepository userRepository) {
 
         this.purchaseRepository = purchaseRepository;
         this.transferRepository = transferRepository;
         this.assignmentRepository = assignmentRepository;
         this.expenditureRepository = expenditureRepository;
-
         this.baseRepository = baseRepository;
         this.equipmentRepository = equipmentRepository;
         this.auditRepository = auditRepository;
@@ -57,19 +51,15 @@ public class MilitaryAssetService {
         Equipment equipment = equipmentRepository.findById(equipmentId)
                 .orElseThrow(() -> new RuntimeException("Equipment not found"));
 
-        if (quantity <= 0) {
-            throw new RuntimeException(
-                    "Quantity is not valid, it should be greater than zero");
+        if (quantity <= 0) {throw new RuntimeException("Quantity is not valid, it should be greater than zero");
         }
 
         purchase.setBase(base);
         purchase.setEquipment(equipment);
         purchase.setDate(LocalDate.now());
-
         Purchase newPurchase = purchaseRepository.save(purchase);
 
-        Authentication authentication =
-                SecurityContextHolder.getContext().getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String username = authentication.getName();
 
@@ -77,8 +67,7 @@ public class MilitaryAssetService {
 
         audit.setUsername(username);
         audit.setAction("PURCHASE");
-        audit.setDetails(quantity + " " + equipment.getName() + " purchased for " + base.getName()
-        );
+        audit.setDetails(quantity + " " + equipment.getName() + " purchased for " + base.getName());
         audit.setTimestamp(LocalDateTime.now());
 
         auditRepository.save(audit);
@@ -88,10 +77,9 @@ public class MilitaryAssetService {
 
     public List<Purchase> getAllPurchases() {
 
-        List<Purchase> purchases =
-                purchaseRepository.findAll();
+        List<Purchase> purchases = purchaseRepository.findAll();
 
-        User user = getLoggedInUser();
+        User user = getCurrentlyLoggedInUser();
 
         if (!isBaseCommander(user)) {
             return purchases;
@@ -99,11 +87,7 @@ public class MilitaryAssetService {
 
         int baseId = user.getBase().getId();
 
-        return purchases.stream()
-                .filter(p ->
-                        p.getBase() != null &&
-                                p.getBase().getId() == baseId
-                )
+        return purchases.stream().filter(p -> p.getBase() != null && p.getBase().getId() == baseId)
                 .toList();
     }
 
@@ -119,10 +103,7 @@ public class MilitaryAssetService {
 
         Base destinationBase = baseRepository.findById(destinationBaseId)
                 .orElseThrow(() -> new RuntimeException("Destination Base not found"));
-        checkTransferAccess(
-                sourceBase,
-                destinationBase
-        );
+        checkTransferAccess(sourceBase, destinationBase);
 
         Equipment equipment = equipmentRepository.findById(equipmentId)
                 .orElseThrow(() -> new RuntimeException("Equipment not Found"));
@@ -157,11 +138,8 @@ public class MilitaryAssetService {
         audit.setUsername(username);
         audit.setAction("TRANSFER");
         audit.setDetails( quantity + " " + equipment.getName() + " transferred from " + sourceBase.getName()
-                         + " to "
-                        + destinationBase.getName()
-        );
+                         + " to " + destinationBase.getName());
        audit.setTimestamp(LocalDateTime.now());
-
 
         auditRepository.save(audit);
         return  newTransfer;
@@ -170,10 +148,9 @@ public class MilitaryAssetService {
 
     public List<Transfer> getAllTransfers() {
 
-        List<Transfer> transfers =
-                transferRepository.findAll();
+        List<Transfer> transfers = transferRepository.findAll();
 
-        User user = getLoggedInUser();
+        User user = getCurrentlyLoggedInUser();
 
         if (!isBaseCommander(user)) {
             return transfers;
@@ -181,14 +158,8 @@ public class MilitaryAssetService {
 
         int baseId = user.getBase().getId();
 
-        return transfers.stream()
-                .filter(t ->
-                        (t.getSourceBase() != null &&
-                                t.getSourceBase().getId() == baseId)
-                                ||
-                                (t.getDestinationBase() != null &&
-                                        t.getDestinationBase().getId() == baseId)
-                )
+        return transfers.stream().filter(t -> (t.getSourceBase() != null && t.getSourceBase().getId() == baseId)
+                                || (t.getDestinationBase() != null && t.getDestinationBase().getId() == baseId))
                 .toList();
     }
 
@@ -230,14 +201,11 @@ public class MilitaryAssetService {
         audit.setUsername(username);
         audit.setAction("ASSIGNMENT");
         audit.setDetails(quantity + " " + equipment.getName() + " assigned from " + base.getName() + " to "
-                        + assignment.getPersonName()
-        );
+                        + assignment.getPersonName());
         audit.setTimestamp(LocalDateTime.now());
-
 
         auditRepository.save(audit);
         return  newAssignment;
-
     }
 
     public List<Assignment> getAllAssignments() {
@@ -245,7 +213,7 @@ public class MilitaryAssetService {
         List<Assignment> assignments =
                 assignmentRepository.findAll();
 
-        User user = getLoggedInUser();
+        User user = getCurrentlyLoggedInUser();
 
         if (!isBaseCommander(user)) {
             return assignments;
@@ -253,11 +221,7 @@ public class MilitaryAssetService {
 
         int baseId = user.getBase().getId();
 
-        return assignments.stream()
-                .filter(a ->
-                        a.getBase() != null &&
-                                a.getBase().getId() == baseId
-                )
+        return assignments.stream().filter(a -> a.getBase() != null && a.getBase().getId() == baseId)
                 .toList();
     }
 
@@ -312,7 +276,7 @@ public class MilitaryAssetService {
         List<Expenditure> expenditures =
                 expenditureRepository.findAll();
 
-        User user = getLoggedInUser();
+        User user = getCurrentlyLoggedInUser();
 
         if (!isBaseCommander(user)) {
             return expenditures;
@@ -320,11 +284,7 @@ public class MilitaryAssetService {
 
         int baseId = user.getBase().getId();
 
-        return expenditures.stream()
-                .filter(e ->
-                        e.getBase() != null &&
-                                e.getBase().getId() == baseId
-                )
+        return expenditures.stream().filter(e -> e.getBase() != null && e.getBase().getId() == baseId)
                 .toList();
     }
 
@@ -351,7 +311,7 @@ public class MilitaryAssetService {
                 - assigned
                 - expended;
     }
-    private User getLoggedInUser() {
+    private User getCurrentlyLoggedInUser()  {
 
         Authentication authentication =
                 SecurityContextHolder
@@ -361,35 +321,28 @@ public class MilitaryAssetService {
         String username = authentication.getName();
 
         return userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found")
-                );
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     private boolean isBaseCommander(User user) {
 
-        return user.getRole().equals("BASE_COMMANDER")
-                || user.getRole().equals("ROLE_BASE_COMMANDER");
+        return user.getRole().equals("BASE_COMMANDER") || user.getRole().equals("ROLE_BASE_COMMANDER");
     }
 
     private void checkBaseAccess(Base base) {
 
-        User user = getLoggedInUser();
+        User user = getCurrentlyLoggedInUser();
 
         if (!isBaseCommander(user)) {
             return;
         }
 
         if (user.getBase() == null) {
-            throw new RuntimeException(
-                    "Base Commander has no assigned base"
-            );
+            throw new RuntimeException("Base Commander has no assigned base");
         }
 
         if (base.getId() != user.getBase().getId()) {
-            throw new RuntimeException(
-                    "You can access only your assigned base"
-            );
+            throw new RuntimeException("You can access only your assigned base");
         }
     }
 
@@ -397,26 +350,21 @@ public class MilitaryAssetService {
             Base sourceBase,
             Base destinationBase) {
 
-        User user = getLoggedInUser();
+        User user = getCurrentlyLoggedInUser();
 
         if (!isBaseCommander(user)) {
             return;
         }
 
         if (user.getBase() == null) {
-            throw new RuntimeException(
-                    "Base Commander has no assigned base"
-            );
+            throw new RuntimeException("Base Commander has no assigned base");
         }
 
         int userBaseId = user.getBase().getId();
 
-        if (sourceBase.getId() != userBaseId
-                && destinationBase.getId() != userBaseId) {
+        if (sourceBase.getId() != userBaseId && destinationBase.getId() != userBaseId) {
 
-            throw new RuntimeException(
-                    "You can transfer only for your assigned base"
-            );
+            throw new RuntimeException("You can transfer only for your assigned base");
         }
     }
 

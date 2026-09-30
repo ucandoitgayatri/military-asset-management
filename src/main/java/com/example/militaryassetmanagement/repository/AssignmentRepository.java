@@ -12,14 +12,13 @@ import java.time.LocalDate;
 public interface AssignmentRepository extends JpaRepository<Assignment, Integer> {
 
     @Query("""
-           SELECT COALESCE(SUM(a.quantity), 0)
-           FROM Assignment a
-           WHERE a.base = :base
-           AND a.equipment = :equipment
-           """)
-    int getAssignedQuantity(
-            @Param("base") Base base,
-            @Param("equipment") Equipment equipment);
+        SELECT COALESCE(SUM(a.quantity), 0)
+        FROM Assignment a
+        WHERE a.base = :base
+        AND a.equipment = :equipment
+        """)
+
+    int getAssignedQuantity(@Param("base") Base base, @Param("equipment") Equipment equipment);
 
     @Query("""
            SELECT COALESCE(SUM(a.quantity), 0)

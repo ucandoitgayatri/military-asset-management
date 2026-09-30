@@ -1,57 +1,35 @@
 const BASE_URL = "https://military-asset-management-whnt.onrender.com";
 
 async function getErrorMessage(response, defaultMessage) {
-    try {
-        const data = await response.json();
-
-        return (
-            data.message ||
-            data.error ||
-            defaultMessage
-        );
+    try { const data = await response.json();
+        return (data.message ||data.error ||  defaultMessage );
     } catch {
         return defaultMessage;
     }
 }
 
-// ---------------- LOGIN ----------------
-
 export async function loginUser(username, password) {
 
-    const response = await fetch(
-        `${BASE_URL}/api/auth/login`,
+    const response = await fetch(`${BASE_URL}/api/auth/login`,
         {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             credentials: "include",
-            body: JSON.stringify({
-                username,
-                password
-            })
+            body: JSON.stringify({ username, password })
         }
     );
 
     if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Login failed"
-            )
-        );
+        throw new Error(await getErrorMessage( response,"Login failed")  );
     }
 
     return response.json();
 }
 
-// ---------------- DASHBOARD ----------------
 
-export async function getDashboard(
-    baseId,
-    equipmentType,
-    date
-) {
+export async function getDashboard( baseId,equipmentType, date) {
 
     const params = new URLSearchParams();
 
@@ -60,45 +38,28 @@ export async function getDashboard(
     }
 
     if (equipmentType) {
-        params.append(
-            "equipmentType",
-            equipmentType
-        );
+        params.append( "equipmentType", equipmentType  );
     }
 
     if (date) {
         params.append("date", date);
     }
 
-    const url =
-        `${BASE_URL}/api/dashboard` +
-        (params.toString()
-            ? `?${params.toString()}`
-            : "");
+    const url = `${BASE_URL}/api/dashboard` +(params.toString() ? `?${params.toString()}`: "");
 
-    const response = await fetch(url, {
-        method: "GET",
-        credentials: "include"
-    });
+    const response = await fetch(url, {method: "GET", credentials: "include" });
 
     if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to load dashboard"
-            )
-        );
+        throw new Error( await getErrorMessage( response,"Failed to load dashboard" )  );
     }
 
     return response.json();
 }
 
-// ---------------- PURCHASE ----------------
 
 export async function addPurchase(data) {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/addPurchase`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/addPurchase`,
         {
             method: "POST",
             headers: {
@@ -110,45 +71,30 @@ export async function addPurchase(data) {
     );
 
     if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to add purchase"
-            )
-        );
+        throw new Error( await getErrorMessage( response,"Failed to add purchase" ));
     }
-
     return response.json();
 }
 
 export async function getPurchases() {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/getAllPurchases`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/getAllPurchases`,
         {
             method: "GET",
             credentials: "include"
         }
     );
 
-    if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to load purchase history"
-            )
-        );
+    if (!response.ok) { throw new Error( await getErrorMessage( response, "Failed to load purchase history") );
     }
 
     return response.json();
 }
 
-// ---------------- TRANSFER ----------------
 
 export async function addTransfer(data) {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/addTransfer`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/addTransfer`,
         {
             method: "POST",
             headers: {
@@ -160,12 +106,7 @@ export async function addTransfer(data) {
     );
 
     if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to add transfer"
-            )
-        );
+        throw new Error(await getErrorMessage(response, "Failed to add transfer" ) );
     }
 
     return response.json();
@@ -173,8 +114,7 @@ export async function addTransfer(data) {
 
 export async function getTransfers() {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/getAllTransfers`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/getAllTransfers`,
         {
             method: "GET",
             credentials: "include"
@@ -182,23 +122,16 @@ export async function getTransfers() {
     );
 
     if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to load transfer history"
-            )
-        );
+        throw new Error(await getErrorMessage( response,"Failed to load transfer history") );
     }
 
     return response.json();
 }
 
-// ---------------- ASSIGNMENT ----------------
 
 export async function addAssignment(data) {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/addAssignment`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/addAssignment`,
         {
             method: "POST",
             headers: {
@@ -210,12 +143,7 @@ export async function addAssignment(data) {
     );
 
     if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to add assignment"
-            )
-        );
+        throw new Error( await getErrorMessage(response,"Failed to add assignment"));
     }
 
     return response.json();
@@ -223,8 +151,7 @@ export async function addAssignment(data) {
 
 export async function getAssignments() {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/getAllAssignments`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/getAllAssignments`,
         {
             method: "GET",
             credentials: "include"
@@ -232,23 +159,17 @@ export async function getAssignments() {
     );
 
     if (!response.ok) {
-        throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to load assignment history"
-            )
-        );
+          throw new Error(
+          await getErrorMessage( response, "Failed to load assignment history")
+          );
     }
 
     return response.json();
 }
 
-// ---------------- EXPENDITURE ----------------
-
 export async function addExpenditure(data) {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/addExpenditure`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/addExpenditure`,
         {
             method: "POST",
             headers: {
@@ -261,11 +182,8 @@ export async function addExpenditure(data) {
 
     if (!response.ok) {
         throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to add expenditure"
-            )
-        );
+            await getErrorMessage( response,  "Failed to add expenditure")
+             );
     }
 
     return response.json();
@@ -273,8 +191,7 @@ export async function addExpenditure(data) {
 
 export async function getExpenditures() {
 
-    const response = await fetch(
-        `${BASE_URL}/api/assetManagement/getAllExpenditures`,
+    const response = await fetch(`${BASE_URL}/api/assetManagement/getAllExpenditures`,
         {
             method: "GET",
             credentials: "include"
@@ -283,10 +200,7 @@ export async function getExpenditures() {
 
     if (!response.ok) {
         throw new Error(
-            await getErrorMessage(
-                response,
-                "Failed to load expenditure history"
-            )
+            await getErrorMessage(response, "Failed to load expenditure history")
         );
     }
 

@@ -23,67 +23,32 @@ function AssetManagement({ user }) {
         role === "ROLE_ADMIN" ||
         role === "ROLE_BASE_COMMANDER";
 
-    const visibleBases =
-        isBaseCommander
-            ? bases.filter(
-                (base) =>
-                    base.id === user.baseId
-            )
-            : bases;
+    const visibleBases = isBaseCommander? bases.filter((base) =>base.id === user.baseId ): bases;
 
-    const [activeTab, setActiveTab] =
-        useState("purchase");
+    const [activeTab, setActiveTab] =useState("purchase");
 
-    const [message, setMessage] =
-        useState("");
+    const [message, setMessage] =useState("");
 
-    const [error, setError] =
-        useState("");
+    const [error, setError] =useState("");
 
-    const [purchases, setPurchases] =
-        useState([]);
+    const [purchases, setPurchases] = useState([]);
 
-    const [transfers, setTransfers] =
-        useState([]);
+    const [transfers, setTransfers] =useState([]);
 
-    const [assignments, setAssignments] =
-        useState([]);
+    const [assignments, setAssignments] = useState([]);
 
-    const [expenditures, setExpenditures] =
-        useState([]);
+    const [expenditures, setExpenditures] =useState([]);
 
-    const [purchaseForm, setPurchaseForm] =
-        useState({
-            baseId: "",
-            equipmentId: "",
-            quantity: "",
-            date: ""
-        });
+    const [purchaseForm, setPurchaseForm] =useState({baseId: "",equipmentId: "",quantity: "",date: ""});
 
     const [transferForm, setTransferForm] =
-        useState({
-            sourceBaseId: "",
-            destinationBaseId: "",
-            equipmentId: "",
-            quantity: ""
-        });
+        useState({sourceBaseId: "",destinationBaseId: "",equipmentId: "",quantity: ""});
 
     const [assignmentForm, setAssignmentForm] =
-        useState({
-            baseId: "",
-            equipmentId: "",
-            personName: "",
-            quantity: "",
-            date: ""
-        });
+        useState({baseId: "",equipmentId: "",personName: "",quantity: "",date: ""});
 
     const [expenditureForm, setExpenditureForm] =
-        useState({
-            baseId: "",
-            equipmentId: "",
-            quantity: "",
-            date: ""
-        });
+        useState({baseId: "",equipmentId: "",quantity: "",date: ""});
 
     useEffect(() => {
         loadHistory();
@@ -92,14 +57,13 @@ function AssetManagement({ user }) {
     async function loadHistory() {
 
         try {
-
             setError("");
 
             const purchaseData =
-                await getPurchases();
+            await getPurchases();
 
             const transferData =
-                await getTransfers();
+             await getTransfers();
 
             setPurchases(purchaseData);
             setTransfers(transferData);
@@ -112,17 +76,12 @@ function AssetManagement({ user }) {
                 const expenditureData =
                     await getExpenditures();
 
-                setAssignments(
-                    assignmentData
-                );
+                setAssignments(assignmentData);
 
-                setExpenditures(
-                    expenditureData
-                );
+                setExpenditures(expenditureData);
             }
 
         } catch (err) {
-
             setError(err.message);
         }
     }
@@ -132,7 +91,6 @@ function AssetManagement({ user }) {
         setError("");
     }
 
-    // ---------------- PURCHASE ----------------
 
     async function handlePurchase(e) {
 
@@ -182,7 +140,7 @@ function AssetManagement({ user }) {
         }
     }
 
-    // ---------------- TRANSFER ----------------
+
 
     async function handleTransfer(e) {
 
@@ -191,28 +149,17 @@ function AssetManagement({ user }) {
 
         try {
 
-            const data = {
-                sourceBase: {
-                    id: Number(
-                        transferForm.sourceBaseId
-                    )
-                },
+            const data = {sourceBase: {id: Number(transferForm.sourceBaseId)},
 
                 destinationBase: {
-                    id: Number(
-                        transferForm.destinationBaseId
-                    )
+                    id: Number(transferForm.destinationBaseId)
                 },
 
                 equipment: {
-                    id: Number(
-                        transferForm.equipmentId
-                    )
+                    id: Number(transferForm.equipmentId)
                 },
 
-                quantity: Number(
-                    transferForm.quantity
-                )
+                quantity: Number(transferForm.quantity)
             };
 
             await addTransfer(data);
@@ -236,7 +183,6 @@ function AssetManagement({ user }) {
         }
     }
 
-    // ---------------- ASSIGNMENT ----------------
 
     async function handleAssignment(e) {
 
@@ -247,15 +193,11 @@ function AssetManagement({ user }) {
 
             const data = {
                 base: {
-                    id: Number(
-                        assignmentForm.baseId
-                    )
+                    id: Number(assignmentForm.baseId)
                 },
 
                 equipment: {
-                    id: Number(
-                        assignmentForm.equipmentId
-                    )
+                    id: Number(assignmentForm.equipmentId)
                 },
 
                 personName:
@@ -291,8 +233,6 @@ function AssetManagement({ user }) {
         }
     }
 
-    // ---------------- EXPENDITURE ----------------
-
     async function handleExpenditure(e) {
 
         e.preventDefault();
@@ -302,20 +242,14 @@ function AssetManagement({ user }) {
 
             const data = {
                 base: {
-                    id: Number(
-                        expenditureForm.baseId
-                    )
+                    id: Number(expenditureForm.baseId)
                 },
 
                 equipment: {
-                    id: Number(
-                        expenditureForm.equipmentId
-                    )
+                    id: Number(expenditureForm.equipmentId)
                 },
 
-                quantity: Number(
-                    expenditureForm.quantity
-                ),
+                quantity: Number(expenditureForm.quantity),
 
                 date:
                     expenditureForm.date
@@ -349,17 +283,13 @@ function AssetManagement({ user }) {
 
                 <div>
                     <h1>Asset Management</h1>
-
                     <p>
                         Manage purchases, transfers and asset records
                     </p>
                 </div>
 
                 <div className="user-badge">
-                    {role === "ROLE_ADMIN"
-                        ? "Administrator"
-                        : role === "ROLE_BASE_COMMANDER"
-                            ? user.baseName
+                    {role === "ROLE_ADMIN"? "Administrator": role === "ROLE_BASE_COMMANDER"? user.baseName
                             : "Logistics Officer"}
                 </div>
 
@@ -369,9 +299,7 @@ function AssetManagement({ user }) {
 
                 <button
                     className={
-                        activeTab === "purchase"
-                            ? "tab active-tab"
-                            : "tab"
+                        activeTab === "purchase"  ? "tab active-tab": "tab"
                     }
                     onClick={() =>
                         setActiveTab("purchase")
@@ -382,9 +310,7 @@ function AssetManagement({ user }) {
 
                 <button
                     className={
-                        activeTab === "transfer"
-                            ? "tab active-tab"
-                            : "tab"
+                        activeTab === "transfer"? "tab active-tab"  : "tab"
                     }
                     onClick={() =>
                         setActiveTab("transfer")
@@ -396,14 +322,10 @@ function AssetManagement({ user }) {
                 {canManageAssignments && (
                     <button
                         className={
-                            activeTab === "assignment"
-                                ? "tab active-tab"
-                                : "tab"
+                            activeTab === "assignment"? "tab active-tab" : "tab"
                         }
                         onClick={() =>
-                            setActiveTab(
-                                "assignment"
-                            )
+                            setActiveTab("assignment")
                         }
                     >
                         Assignments
@@ -413,14 +335,10 @@ function AssetManagement({ user }) {
                 {canManageAssignments && (
                     <button
                         className={
-                            activeTab === "expenditure"
-                                ? "tab active-tab"
-                                : "tab"
+                            activeTab === "expenditure" ? "tab active-tab" : "tab"
                         }
                         onClick={() =>
-                            setActiveTab(
-                                "expenditure"
-                            )
+                            setActiveTab("expenditure")
                         }
                     >
                         Expenditures
@@ -469,10 +387,7 @@ function AssetManagement({ user }) {
                                         purchaseForm.baseId
                                     }
                                     onChange={(e) =>
-                                        setPurchaseForm({
-                                            ...purchaseForm,
-                                            baseId:
-                                                e.target.value
+                                        setPurchaseForm({...purchaseForm,baseId:e.target.value
                                         })
                                     }
                                     required
@@ -484,12 +399,8 @@ function AssetManagement({ user }) {
                                     {visibleBases.map(
                                         (base) => (
                                             <option
-                                                key={
-                                                    base.id
-                                                }
-                                                value={
-                                                    base.id
-                                                }
+                                                key={base.id}
+                                                value={base.id}
                                             >
                                                 {base.name}
                                             </option>
@@ -507,14 +418,9 @@ function AssetManagement({ user }) {
                                 </label>
 
                                 <select
-                                    value={
-                                        purchaseForm.equipmentId
-                                    }
+                                    value={purchaseForm.equipmentId}
                                     onChange={(e) =>
-                                        setPurchaseForm({
-                                            ...purchaseForm,
-                                            equipmentId:
-                                                e.target.value
+                                        setPurchaseForm({...purchaseForm,equipmentId:e.target.value
                                         })
                                     }
                                     required
@@ -525,12 +431,9 @@ function AssetManagement({ user }) {
 
                                     {equipment.map(
                                         (item) => (
-                                            <option
-                                                key={
-                                                    item.id
+                                            <option key={item.id
                                                 }
-                                                value={
-                                                    item.id
+                                                value={ item.id
                                                 }
                                             >
                                                 {item.name}
@@ -546,18 +449,9 @@ function AssetManagement({ user }) {
 
                                 <label>Quantity</label>
 
-                                <input
-                                    type="number"
-                                    min="1"
-                                    placeholder="Enter quantity"
-                                    value={
-                                        purchaseForm.quantity
-                                    }
+                                <input type="number" min="1" placeholder="Enter quantity"  value={purchaseForm.quantity}
                                     onChange={(e) =>
-                                        setPurchaseForm({
-                                            ...purchaseForm,
-                                            quantity:
-                                                e.target.value
+                                        setPurchaseForm({...purchaseForm,quantity:e.target.value
                                         })
                                     }
                                     required
@@ -569,16 +463,10 @@ function AssetManagement({ user }) {
 
                                 <label>Date</label>
 
-                                <input
-                                    type="date"
-                                    value={
-                                        purchaseForm.date
-                                    }
+                                <input type="date"
+                                    value={purchaseForm.date}
                                     onChange={(e) =>
-                                        setPurchaseForm({
-                                            ...purchaseForm,
-                                            date:
-                                                e.target.value
+                                        setPurchaseForm({...purchaseForm,date:e.target.value
                                         })
                                     }
                                     required
@@ -676,7 +564,7 @@ function AssetManagement({ user }) {
                 </div>
             )}
 
-            {/* ---------------- TRANSFER ---------------- */}
+
 
             {activeTab === "transfer" && (
                 <div className="content-section">
@@ -706,10 +594,7 @@ function AssetManagement({ user }) {
                                         transferForm.sourceBaseId
                                     }
                                     onChange={(e) =>
-                                        setTransferForm({
-                                            ...transferForm,
-                                            sourceBaseId:
-                                                e.target.value
+                                        setTransferForm({...transferForm,sourceBaseId:e.target.value
                                         })
                                     }
                                     required
@@ -721,12 +606,8 @@ function AssetManagement({ user }) {
                                     {visibleBases.map(
                                         (base) => (
                                             <option
-                                                key={
-                                                    base.id
-                                                }
-                                                value={
-                                                    base.id
-                                                }
+                                                key={base.id}
+                                                value={base.id}
                                             >
                                                 {base.name}
                                             </option>
@@ -748,10 +629,7 @@ function AssetManagement({ user }) {
                                         transferForm.destinationBaseId
                                     }
                                     onChange={(e) =>
-                                        setTransferForm({
-                                            ...transferForm,
-                                            destinationBaseId:
-                                                e.target.value
+                                        setTransferForm({...transferForm,destinationBaseId:e.target.value
                                         })
                                     }
                                     required
@@ -797,10 +675,7 @@ function AssetManagement({ user }) {
                                         transferForm.equipmentId
                                     }
                                     onChange={(e) =>
-                                        setTransferForm({
-                                            ...transferForm,
-                                            equipmentId:
-                                                e.target.value
+                                        setTransferForm({...transferForm,equipmentId:e.target.value
                                         })
                                     }
                                     required
@@ -834,18 +709,10 @@ function AssetManagement({ user }) {
                                     Quantity
                                 </label>
 
-                                <input
-                                    type="number"
-                                    min="1"
-                                    placeholder="Enter quantity"
-                                    value={
+                                <input type="number"  min="1"   placeholder="Enter quantity"  value={
                                         transferForm.quantity
                                     }
-                                    onChange={(e) =>
-                                        setTransferForm({
-                                            ...transferForm,
-                                            quantity:
-                                                e.target.value
+                                    onChange={(e) =>setTransferForm({...transferForm,quantity:e.target.value
                                         })
                                     }
                                     required
@@ -948,8 +815,6 @@ function AssetManagement({ user }) {
                 </div>
             )}
 
-            {/* ---------------- ASSIGNMENT ---------------- */}
-
             {activeTab === "assignment" &&
                 canManageAssignments && (
                     <div className="content-section">
@@ -984,11 +849,7 @@ function AssetManagement({ user }) {
                                             assignmentForm.baseId
                                         }
                                         onChange={(e) =>
-                                            setAssignmentForm({
-                                                ...assignmentForm,
-                                                baseId:
-                                                    e.target.value
-                                            })
+                                            setAssignmentForm({...assignmentForm,baseId:e.target.value})
                                         }
                                         required
                                     >
@@ -1025,10 +886,7 @@ function AssetManagement({ user }) {
                                         value={
                                             assignmentForm.equipmentId
                                         }
-                                        onChange={(e) =>
-                                            setAssignmentForm({
-                                                ...assignmentForm,
-                                                equipmentId:
+                                        onChange={(e) =>setAssignmentForm({...assignmentForm,equipmentId:
                                                     e.target.value
                                             })
                                         }
@@ -1063,17 +921,11 @@ function AssetManagement({ user }) {
                                         Person Name
                                     </label>
 
-                                    <input
-                                        type="text"
-                                        placeholder="Enter personnel name"
-                                        value={
-                                            assignmentForm.personName
+                                    <input type="text" placeholder="Enter personnel name"
+                                        value={assignmentForm.personName
                                         }
                                         onChange={(e) =>
-                                            setAssignmentForm({
-                                                ...assignmentForm,
-                                                personName:
-                                                    e.target.value
+                                            setAssignmentForm({...assignmentForm,personName:e.target.value
                                             })
                                         }
                                         required
@@ -1087,18 +939,11 @@ function AssetManagement({ user }) {
                                         Quantity
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        placeholder="Enter quantity"
-                                        value={
+                                    <input type="number" min="1" placeholder="Enter quantity" value={
                                             assignmentForm.quantity
                                         }
                                         onChange={(e) =>
-                                            setAssignmentForm({
-                                                ...assignmentForm,
-                                                quantity:
-                                                    e.target.value
+                                            setAssignmentForm({...assignmentForm,quantity:e.target.value
                                             })
                                         }
                                         required
@@ -1112,16 +957,12 @@ function AssetManagement({ user }) {
                                         Date
                                     </label>
 
-                                    <input
-                                        type="date"
+                                    <input type="date"
                                         value={
                                             assignmentForm.date
                                         }
                                         onChange={(e) =>
-                                            setAssignmentForm({
-                                                ...assignmentForm,
-                                                date:
-                                                    e.target.value
+                                            setAssignmentForm({...assignmentForm,date:e.target.value
                                             })
                                         }
                                         required
@@ -1226,7 +1067,7 @@ function AssetManagement({ user }) {
                     </div>
                 )}
 
-            {/* ---------------- EXPENDITURE ---------------- */}
+
 
             {activeTab === "expenditure" &&
                 canManageAssignments && (
@@ -1262,10 +1103,7 @@ function AssetManagement({ user }) {
                                             expenditureForm.baseId
                                         }
                                         onChange={(e) =>
-                                            setExpenditureForm({
-                                                ...expenditureForm,
-                                                baseId:
-                                                    e.target.value
+                                            setExpenditureForm({...expenditureForm,baseId:e.target.value
                                             })
                                         }
                                         required
@@ -1341,17 +1179,12 @@ function AssetManagement({ user }) {
                                         Quantity
                                     </label>
 
-                                    <input
-                                        type="number"
-                                        min="1"
-                                        placeholder="Enter quantity"
+                                    <input type="number" min="1"   placeholder="Enter quantity"
                                         value={
                                             expenditureForm.quantity
                                         }
                                         onChange={(e) =>
-                                            setExpenditureForm({
-                                                ...expenditureForm,
-                                                quantity:
+                                            setExpenditureForm({...expenditureForm,quantity:
                                                     e.target.value
                                             })
                                         }
