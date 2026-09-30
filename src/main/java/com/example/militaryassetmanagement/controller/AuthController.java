@@ -41,7 +41,7 @@ public class AuthController {
     public ResponseEntity<String> health() {
         return ResponseEntity.ok("Backend is running");
     }
-    
+
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestBody LoginRequest loginRequest,
