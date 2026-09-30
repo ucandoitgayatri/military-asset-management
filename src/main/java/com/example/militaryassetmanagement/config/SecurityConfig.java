@@ -180,8 +180,7 @@ public class SecurityConfig {
         // React frontend
         configuration.setAllowedOrigins(List.of(
                 "http://localhost:5173",
-                "http://localhost:5174",
-                "http://localhost:5175"
+                "https://military-asset-management-indol.vercel.app"
         ));
 
         configuration.setAllowedMethods(

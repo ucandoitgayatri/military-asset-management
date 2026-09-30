@@ -37,6 +37,11 @@ public class AuthController {
         this.userRepository = userRepository;
     }
 
+    @GetMapping("/health")
+    public ResponseEntity<String> health() {
+        return ResponseEntity.ok("Backend is running");
+    }
+    
     @PostMapping("/login")
     public ResponseEntity<?> login(
             @RequestBody LoginRequest loginRequest,
