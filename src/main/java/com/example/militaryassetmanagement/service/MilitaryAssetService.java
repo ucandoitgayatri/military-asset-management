@@ -305,18 +305,11 @@ public class MilitaryAssetService {
         int expended =
                 expenditureRepository.getExpendedQuantity(base, equipment);
 
-        return purchased
-                + transferIn
-                - transferOut
-                - assigned
-                - expended;
+        return purchased + transferIn - transferOut - assigned - expended;
     }
     private User getCurrentlyLoggedInUser()  {
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String username = authentication.getName();
 

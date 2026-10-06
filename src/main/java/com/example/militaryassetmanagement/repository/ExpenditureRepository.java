@@ -12,38 +12,24 @@ import java.time.LocalDate;
 public interface ExpenditureRepository extends JpaRepository<Expenditure, Integer> {
 
     @Query("""
-           SELECT COALESCE(SUM(e.quantity), 0)
-           FROM Expenditure e
-           WHERE e.base = :base
-           AND e.equipment = :equipment
-           """)
-    int getExpendedQuantity(
-            @Param("base") Base base,
-            @Param("equipment") Equipment equipment);
+           SELECT COALESCE(SUM(e.quantity), 0) FROM Expenditure e WHERE e.base = :base
+           AND e.equipment = :equipment""")
+
+    int getExpendedQuantity(@Param("base") Base base, @Param("equipment") Equipment equipment);
 
     @Query("""
-           SELECT COALESCE(SUM(e.quantity), 0)
-           FROM Expenditure e
-           WHERE (:base IS NULL OR e.base = :base)
-           AND (:equipmentType IS NULL
-                OR LOWER(e.equipment.type) = LOWER(:equipmentType))
-           AND e.date < :date
-           """)
-    int getExpenditureQuantityBeforeDate(
-            @Param("base") Base base,
-            @Param("equipmentType") String equipmentType,
+           SELECT COALESCE(SUM(e.quantity), 0) FROM Expenditure e
+           WHERE (:base IS NULL OR e.base = :base) AND (:equipmentType IS NULL OR LOWER(e.equipment.type) = LOWER(:equipmentType))
+           AND e.date < :date""")
+
+    int getExpenditureQuantityBeforeDate(@Param("base") Base base, @Param("equipmentType") String equipmentType,
             @Param("date") LocalDate date);
 
     @Query("""
-           SELECT COALESCE(SUM(e.quantity), 0)
-           FROM Expenditure e
-           WHERE (:base IS NULL OR e.base = :base)
-           AND (:equipmentType IS NULL
-                OR LOWER(e.equipment.type) = LOWER(:equipmentType))
-           AND e.date = :date
-           """)
-    int getExpenditureQuantityOnDate(
-            @Param("base") Base base,
-            @Param("equipmentType") String equipmentType,
+           SELECT COALESCE(SUM(e.quantity), 0) FROM Expenditure e WHERE (:base IS NULL OR e.base = :base)
+           AND (:equipmentType IS NULL OR LOWER(e.equipment.type) = LOWER(:equipmentType))
+           AND e.date = :date""")
+
+    int getExpenditureQuantityOnDate(@Param("base") Base base, @Param("equipmentType") String equipmentType,
             @Param("date") LocalDate date);
 }

@@ -45,18 +45,14 @@ public class DashboardService{
 
          if (isBaseCommander(user)) {
              if (user.getBase() == null) {
-                 throw new RuntimeException(
-                         "Base Commander has no assigned base"
-                 );
+                 throw new RuntimeException("Base Commander has no assigned base");
              }
              base = user.getBase();
 
          } else if (baseId != null) {
 
-             base = baseRepository.findById(baseId)
-                     .orElseThrow(() ->
-                             new RuntimeException("Base not found")// baseId != null means if you haven't provided any base then baseId becomes null and this method will not work and exception is not thrown
-                     );
+             base = baseRepository.findById(baseId).orElseThrow(() -> new RuntimeException("Base not found"));// baseId != null means if you haven't provided any base then baseId becomes null and this method will not work and exception is not thrown
+
          }
 
          int openingBalance = openingBalanceCalculate(base, equipmentType, date);
@@ -120,23 +116,17 @@ public class DashboardService{
         return  assignment;
     }
     private User getCurrentlyLoggedInUser() {
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         String username = authentication.getName();
 
         return userRepository.findByUsername(username)
-                .orElseThrow(() ->
-                        new RuntimeException("User not found")
-                );
+                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
     private boolean isBaseCommander(User user) {
 
-        return user.getRole().equals("BASE_COMMANDER")
-                || user.getRole().equals("ROLE_BASE_COMMANDER");
+        return user.getRole().equals("BASE_COMMANDER") || user.getRole().equals("ROLE_BASE_COMMANDER");
     }
 
 }
